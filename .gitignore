@@ -3,10 +3,11 @@
 *.iws
 *.iml
 *.ipr
-.jar
+*.jar
 
 ### Maven ###
 target/
 
 ### customer ###
 logs/
+*.txt

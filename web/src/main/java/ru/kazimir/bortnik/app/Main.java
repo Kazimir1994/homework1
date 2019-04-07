@@ -14,7 +14,8 @@ public class Main {
     private static Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        File file = new File("DataTest.txt");
+
+        File file = new File("Data.txt");
         FileService fileService = FileServiceImpl.getInstance();
         String data = fileService.getDataFromFile(file);
         logger.info("Received data " + data);

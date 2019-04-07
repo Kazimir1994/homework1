@@ -30,13 +30,25 @@ public class FileRepositoryImpl implements FileRepository {
     private final static String FORMAT_INFO_FILE = "[File Name= %s, File Path to the file= %s, File size= %s byte]";
 
     @Override
-    public List<String> readFile(File fileRead) throws IOException {
+    public List<String> readFile(File fileRead) {
+        validate(fileRead);
         List<String> dataFile = new ArrayList<>();
         logger.info("Attempt to read file " + String.format(FORMAT_INFO_FILE, fileRead.getName(), fileRead.getAbsolutePath(), fileRead.length()));
+
         try (Stream<String> lines = Files.lines(Paths.get(fileRead.getAbsolutePath()))) {
             dataFile = lines.map(x -> x + "\n").collect(Collectors.toList());
+
+            logger.info("File[" + fileRead.getName() + "] successfully read ");
+        } catch (IOException error) {
+            logger.error(error.getMessage(), error);
         }
-        logger.info("File[" + fileRead.getName() + "] successfully read ");
         return dataFile;
+    }
+
+    private void validate(File fileRead) {
+        if (fileRead == null || !fileRead.exists()) {
+            logger.error("File doesn't exist" );
+            throw new RuntimeException("File doesn't exist");
+        }
     }
 }

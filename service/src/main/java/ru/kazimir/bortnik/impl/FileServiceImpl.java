@@ -6,9 +6,8 @@ import ru.kazimir.bortnik.FileRepository;
 import ru.kazimir.bortnik.FileService;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileServiceImpl implements FileService {
     private static FileServiceImpl instance;
@@ -25,16 +24,24 @@ public class FileServiceImpl implements FileService {
 
     private FileRepository fileRepository = FileRepositoryImpl.getInstance();
     private Logger logger = LogManager.getLogger(FileServiceImpl.class);
-    private static final String PATTERN_LINE = "^(\\d+([:,|\n]))*$";
+    private static final String PATTERN_LINE = "^(\\d+([:,\\n|])){0,2}$";
 
     @Override
     public String getDataFromFile(File fileRead) {
-        try {
-            List<String> stringList = fileRepository.readFile(fileRead);
-            return stringList.stream().filter(x -> x.matches(PATTERN_LINE)).collect(Collectors.joining());
-        } catch (IOException error) {
-            logger.error(error.getMessage(), error);
+        validate(fileRead);
+        List<String> stringList = fileRepository.readFile(fileRead);
+        String line = stringList.stream().reduce("", (element1, element2) -> element1 + element2);
+        return Stream.of(line)
+                .filter(x -> x.matches(PATTERN_LINE))
+                .findAny()
+                .orElse("");
+
+    }
+
+    private void validate(File fileRead) {
+        if (!fileRead.exists()) {
+            logger.error("File doesn't exist" );
+            throw new RuntimeException("File doesn't exist");
         }
-        return null;
     }
 }

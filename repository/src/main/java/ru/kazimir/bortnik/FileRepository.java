@@ -5,5 +5,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface FileRepository {
-    List<String> readFile(File fileRead) throws IOException;
+    List<String> readFile(File fileRead);
 }
